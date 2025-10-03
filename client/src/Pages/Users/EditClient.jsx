@@ -43,6 +43,7 @@ const EditClient = ({ open, setOpen }) => {
       lastName: { required: true, minLength: 2, maxLength: 50 },
       username: { required: true, minLength: 3, maxLength: 20 },
       phone: { required: true, minLength: 10, maxLength: 15 },
+      email: { email: true },
       city: { required: false },
     },
   });
@@ -141,6 +142,8 @@ const EditClient = ({ open, setOpen }) => {
                   placeholder="Optional"
                   value={values.email}
                   onChange={handleChange("email")}
+                  error={Boolean(errors.email)}
+                  helperText={errors.email}
                 />
               </td>
             </tr>

@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createEmployee } from "../../redux/action/user";
-import { useNavigate } from "react-router-dom";
-import Topbar from "./Topbar";
+import { createClient } from "../../redux/action/user";
 import {
   Divider,
   Dialog,
@@ -11,9 +9,6 @@ import {
   Slide,
   DialogActions,
   TextField,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
 } from "@mui/material";
 import { PiNotepad, PiXLight } from "react-icons/pi";
 import { CFormSelect } from "@coreui/react";
@@ -24,12 +19,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const CreateUser = ({ open, setOpen, scroll }) => {
-  //////////////////////////////////////// VARIABLES /////////////////////////////////////
+const CreateClient = ({ open, setOpen, scroll }) => {
   const { isFetching } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
-  //////////////////////////////////////// STATES /////////////////////////////////////
   const {
     values,
     errors,
@@ -44,6 +37,7 @@ const CreateUser = ({ open, setOpen, scroll }) => {
       password: "",
       phone: "",
       email: "",
+      city: "",
     },
     validationSchema: {
       firstName: { required: true, minLength: 2, maxLength: 50 },
@@ -52,14 +46,12 @@ const CreateUser = ({ open, setOpen, scroll }) => {
       password: { required: true, minLength: 6, maxLength: 50 },
       phone: { required: true, minLength: 10, maxLength: 15 },
       email: { email: true },
+      city: { required: false },
     },
   });
 
-  //////////////////////////////////////// USE EFFECTS /////////////////////////////////////
-
-  //////////////////////////////////////// FUNCTIONS /////////////////////////////////////
   const onSubmit = (data) => {
-    dispatch(createEmployee(data, setOpen));
+    dispatch(createClient(data, setOpen));
     reset();
   };
 
@@ -80,7 +72,7 @@ const CreateUser = ({ open, setOpen, scroll }) => {
         maxWidth="sm"
         aria-describedby="alert-dialog-slide-description">
         <DialogTitle className="flex items-center justify-between">
-          <div className="text-sky-400 font-primary">Add New Employee</div>
+          <div className="text-sky-400 font-primary">Add New Client</div>
           <div className="cursor-pointer" onClick={handleClose}>
             <PiXLight className="text-[25px]" />
           </div>
@@ -89,7 +81,7 @@ const CreateUser = ({ open, setOpen, scroll }) => {
           <div className="flex flex-col gap-2 p-3 text-gray-500 font-primary">
             <div className="text-xl flex justify-start items-center gap-2 font-normal">
               <PiNotepad size={23} />
-              <span>Employee Detials</span>
+              <span>Client Details</span>
             </div>
             <Divider />
             <table className="mt-4">
@@ -174,6 +166,25 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                   />
                 </td>
               </tr>
+              <tr>
+                <td className="pb-4 text-lg">City </td>
+                <td className="pb-4">
+                  <CFormSelect
+                    value={values.city}
+                    onChange={(e) => handleChange("city")(e)}
+                    className="border-[1px] p-2 rounded-md w-full border-[#c1c1c1] cursor-pointer text-black">
+                    <option value="">Select City</option>
+                    {pakistanCities.map((city, key) => (
+                      <option key={key} value={city}>
+                        {city}
+                      </option>
+                    ))}
+                  </CFormSelect>
+                  {errors.city && (
+                    <p className="text-red-500 text-sm mt-1">{errors.city}</p>
+                  )}
+                </td>
+              </tr>
             </table>
           </div>
         </DialogContent>
@@ -194,8 +205,8 @@ const CreateUser = ({ open, setOpen, scroll }) => {
         </DialogActions>
       </Dialog>
     </div>
-
   );
 };
 
-export default CreateUser;
+export default CreateClient;
+

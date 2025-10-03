@@ -25,6 +25,11 @@ export const useForm = ({ defaultValues = {}, validationSchema = {} } = {}) => {
         return;
       }
       
+      if (rules.email && value && !/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value)) {
+        newErrors[field] = `Invalid ${fieldLabel.toLowerCase()} format`;
+        return;
+      }
+      
       if (rules.pattern && value && !rules.pattern.test(value)) {
         newErrors[field] = rules.patternMessage || `Invalid ${fieldLabel.toLowerCase()} format`;
         return;
