@@ -18,6 +18,7 @@ import {
 import { PiNotepad, PiXLight } from "react-icons/pi";
 import { CFormSelect } from "@coreui/react";
 import { pakistanCities } from "../../constant";
+import { useForm } from "../../hooks/useForm";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -27,37 +28,43 @@ const CreateUser = ({ open, setOpen, scroll }) => {
   //////////////////////////////////////// VARIABLES /////////////////////////////////////
   const { isFetching } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const initialEmployeeState = {
-    firstName: "",
-    lastName: "",
-    username: "",
-    password: "",
-    phone: "",
-    email: "",
-  }
 
   //////////////////////////////////////// STATES /////////////////////////////////////
-  const [employeeData, setEmployeeData] = useState(initialEmployeeState);
+  const {
+    values,
+    errors,
+    handleChange,
+    handleSubmit,
+    reset,
+  } = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      username: "",
+      password: "",
+      phone: "",
+      email: "",
+    },
+    validationSchema: {
+      firstName: { required: true, minLength: 2, maxLength: 50 },
+      lastName: { required: true, minLength: 2, maxLength: 50 },
+      username: { required: true, minLength: 3, maxLength: 20 },
+      password: { required: true, minLength: 6, maxLength: 50 },
+      phone: { required: true, minLength: 10, maxLength: 15 },
+    },
+  });
 
   //////////////////////////////////////// USE EFFECTS /////////////////////////////////////
 
   //////////////////////////////////////// FUNCTIONS /////////////////////////////////////
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const { firstName, lastName, username, password, phone, email } = employeeData
-    if (!firstName || !lastName || !username || !password || !phone  )
-      return alert("Make sure to provide all the fields")
-    dispatch(createEmployee(employeeData, setOpen));
-    setEmployeeData(initialEmployeeState)
-  };
-
-  const handleChange = (field, value) => {
-    setEmployeeData((prevFilters) => ({ ...prevFilters, [field]: value, }));
+  const onSubmit = (data) => {
+    dispatch(createEmployee(data, setOpen));
+    reset();
   };
 
   const handleClose = () => {
     setOpen(false);
-    setEmployeeData(initialEmployeeState)
+    reset();
   };
 
   return (
@@ -91,8 +98,10 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                   <TextField
                     size="small"
                     fullWidth
-                    value={employeeData.firstName}
-                    onChange={(e) => handleChange('firstName', e.target.value)}
+                    value={values.firstName}
+                    onChange={handleChange("firstName")}
+                    error={Boolean(errors.firstName)}
+                    helperText={errors.firstName}
                   />
                 </td>
               </tr>
@@ -102,8 +111,10 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                   <TextField
                     size="small"
                     fullWidth
-                    value={employeeData.lastName}
-                    onChange={(e) => handleChange('lastName', e.target.value)}
+                    value={values.lastName}
+                    onChange={handleChange("lastName")}
+                    error={Boolean(errors.lastName)}
+                    helperText={errors.lastName}
                   />
                 </td>
               </tr>
@@ -113,8 +124,10 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                   <TextField
                     size="small"
                     fullWidth
-                    value={employeeData.username}
-                    onChange={(e) => handleChange('username', e.target.value)}
+                    value={values.username}
+                    onChange={handleChange("username")}
+                    error={Boolean(errors.username)}
+                    helperText={errors.username}
                   />
                 </td>
               </tr>
@@ -125,8 +138,8 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                     size="small"
                     fullWidth
                     placeholder="Optional"
-                    value={employeeData.email}
-                    onChange={(e) => handleChange('email', e.target.value)}
+                    value={values.email}
+                    onChange={handleChange("email")}
                   />
                 </td>
               </tr>
@@ -135,10 +148,12 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                 <td className="pb-4">
                   <TextField
                     type="password"
-                    value={employeeData.password}
-                    onChange={(e) => handleChange("password", e.target.value)}
                     size="small"
                     fullWidth
+                    value={values.password}
+                    onChange={handleChange("password")}
+                    error={Boolean(errors.password)}
+                    helperText={errors.password}
                   />
                 </td>
               </tr>
@@ -148,9 +163,11 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                   <TextField
                     type="number"
                     size="small"
-                    value={employeeData.phone}
-                    onChange={(e) => handleChange("phone", e.target.value)}
                     fullWidth
+                    value={values.phone}
+                    onChange={handleChange("phone")}
+                    error={Boolean(errors.phone)}
+                    helperText={errors.phone}
                   />
                 </td>
               </tr>
@@ -166,7 +183,7 @@ const CreateUser = ({ open, setOpen, scroll }) => {
             Cancel
           </button>
           <button
-            onClick={handleSubmit}
+            onClick={handleSubmit(onSubmit)}
             variant="contained"
             className="bg-primary-red px-4 py-2 rounded-lg text-white mt-4 hover:bg-red-400 font-thin">
             {isFetching ? 'Submitting...' : 'Submit'}
